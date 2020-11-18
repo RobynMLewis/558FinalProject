@@ -6,7 +6,7 @@
 #
 #    http://shiny.rstudio.com/
 #
-install.packages("shinydashboard", "tidyverse", "knitr", "ggplot2", "plotly", "dplyr")
+install.packages("shinydashboard", "tidyverse", "knitr", "ggplot2", "plotly", "dplyr", "DT", "randomForest")
 
 library(shiny)
 library(shinydashboard)
@@ -20,6 +20,7 @@ choices <- c("Season", "Director", "Writer")
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
+    withMathJax(),
     dashboardPage(
         dashboardHeader(title="The Office IMDB Ratings"),
         #Set up side bar menu
@@ -38,6 +39,7 @@ shinyUI(fluidPage(
                 #Info
                 tabItem(tabName = "dashboard",
                 #text that introduces the data, map of Scranton if you can
+                #Link to The Office Wiki
                         ),
                 tabItem(tabName = "dataExp",
                 #text: The new Vice President needs a rundown! This shouldn't take all day, and when you're done you'll
@@ -60,7 +62,7 @@ shinyUI(fluidPage(
                                             #conditional panel
                                                 #submitButton("Is This a Rundown?)
                 
-                                    #submitButton("Fax to the Distribution List")
+                                    #actionButton("Fax to the Distribution List")
                         #if analysis == "Numerical Summary"
                             #radioButtons(filter, "Summary of What?", choices=choices)
                                 #conditional panel
@@ -77,7 +79,7 @@ shinyUI(fluidPage(
                                             #conditional panel
                                                 #submitButton("Is This a Rundown?")
                 
-                                    #submitButton("Fax to the Distribution List")
+                                    #actionButton("Fax to the Distribution List")
                         #if analysis == "Distribution"
                             #radioButtons(filter, "Distribution of What?", choices=choices)
                                 #conditional panel
@@ -94,13 +96,22 @@ shinyUI(fluidPage(
                                             #conditional panel
                                                 #submitButton("Is This a Rundown?")
                 
-                                    #submitButton("Fax to the Distribution List")
+                                    #actionButton("Fax to the Distribution List")
                         ),
                 tabItem(tabName = "analysis",
+                        #text:  Michael didn't get invited on Ryan's wilderness retreat and wants to prove himself.
+                        #He's going to go deep into the woods with nothing but a pocket knife and some duct tape.
+                        #Let's do some random forest analysis to help him out!
+                        #numericInput(nodes, "How many items (nodes) should Michael use?", min=1, max=4, step=1)
+                        #sliderInput(trees, "How many trees?", min=1, max=25)
+                        #submitButton("Into the Wilderness!") 
                         ),
                 tabItem(tabName = "models",
+                        #text: Unfortunately the chair model, Deborah Shoshlefski, crashed her car into an airplane
+                        #hangar and died. So I guess we'll have to look at some statistical models instead. 
                         ),
                 tabItem(tabName = "data",
+                        #text: This is the data. It's a statement of fact. 
                         )
             )
             
