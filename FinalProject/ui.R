@@ -99,16 +99,20 @@ shinyUI(fluidPage(
                                     #actionButton("Fax to the Distribution List")
                         ),
                 tabItem(tabName = "analysis",
-                        #text:  Michael didn't get invited on Ryan's wilderness retreat and wants to prove himself.
-                        #He's going to go deep into the woods with nothing but a pocket knife and some duct tape.
-                        #Let's do some random forest analysis to help him out!
-                        #numericInput(nodes, "How many items (nodes) should Michael use?", min=1, max=4, step=1)
-                        #sliderInput(trees, "How many trees?", min=1, max=25)
-                        #submitButton("Into the Wilderness!") 
+                        
                         ),
                 tabItem(tabName = "models",
                         #text: Unfortunately the chair model, Deborah Shoshlefski, crashed her car into an airplane
-                        #hangar and died. So I guess we'll have to look at some statistical models instead. 
+                        #hangar. So we'll have to look at some statistical models instead.
+                        #selectInput(model, "Pick a model", choices=c("Random Forest",  ))
+                            #conditional panel
+                                #if model == "Random Forest"
+                                    #text:  Michael didn't get invited on Ryan's wilderness retreat and wants to 
+                                    #prove himself. He's going to go deep into a random forest with nothing but 
+                                    #a pocket knife and some duct tape. Let's do some analysis to help him out!
+                                    #numericInput(nodes, "How many items (nodes) should Michael use?", min=1, max=4, step=1)
+                                    #sliderInput(trees, "How many trees?", min=1, max=25)
+                                    #submitButton("Into the Wilderness!") 
                         ),
                 tabItem(tabName = "data",
                         #text: This is the data. It's a statement of fact. 

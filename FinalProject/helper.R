@@ -55,22 +55,81 @@ ggplotly(g2)
 
 #Modeling
 #subset into test/train
+officeCopy <- officeData[,-c(2)]
+
+allDirectors <- unique(officeCopy$DirectedBy)
+topDirectors <- c("Jeffrey Blitz", "Greg Daniels", "Randall Einhorn", "Paul Feig", "Ken Kwapis", "Paul Lieberstein", "Charles McDougall", "David Rogers", "Matt Sohn", "Ken Whittingham")
+
+
+for(i in 1:nrow(officeCopy)){
+  if(officeCopy$DirectedBy[i] == "Jeffrey Blitz"){
+    officeCopy$DirectedBy[i] <- "Jeffrey Blitz"}
+    else if(officeCopy$DirectedBy[i] == "Greg Daniels"){
+      officeCopy$DirectedBy[i] <- "Greg Daniels"}
+      else if(officeCopy$DirectedBy[i] == "Randall Einhorn"){
+        officeCopy$DirectedBy[i] <- "Randall Einhorn"}
+        else if(officeCopy$DirectedBy[i] == "Paul Feig"){
+          officeCopy$DirectedBy[i] <- "Paul Feig"}
+          else if(officeCopy$DirectedBy[i] == "Ken Kwapis"){
+            officeCopy$DirectedBy[i] <- "Ken Kwapis"}
+            else if(officeCopy$DirectedBy[i] == "Paul Lieberstein"){
+              officeCopy$DirectedBy[i] <- "Paul Lieberstein"}
+              else if(officeCopy$DirectedBy[i] == "Charles McDougall"){
+                officeCopy$DirectedBy[i] <- "Charles McDougall"}
+                else if(officeCopy$DirectedBy[i] == "David Rogers"){
+                  officeCopy$DirectedBy[i] <- "David Rogers"}
+                  else if(officeCopy$DirectedBy[i] == "Matt Sohn"){
+                    officeCopy$DirectedBy[i] <- "Matt Sohn"}
+                    else if(officeCopy$DirectedBy[i] == "Ken Whittingham"){
+                      officeCopy$DirectedBy[i] <- "Ken Whittingham"}
+                    else{officeCopy$DirectedBy[i] <- "Other"}
+}
+
+topWriters <- c("Jennifer Celotta", "Daniel Chun", "Greg Daniels", "Brent Forrester", "Charlie Grandy", "Mindy Kaling",
+             "Paul Lieberstein", "B.J. Novak", "Michael Schur", "Justin Spitzer")
+
+for(i in 1:nrow(officeCopy)){
+  if(officeCopy$WrittenBy[i] == "Jennifer Celotta"){
+    officeCopy$WrittenBy[i] <- "Jennifer Celotta"}
+  else if(officeCopy$WrittenBy[i] == "Daniel Chun"){
+    officeCopy$WrittenBy[i] <- "Daniel Chun"}
+    else if(officeCopy$WrittenBy[i] == "Greg Daniels"){
+      officeCopy$WrittenBy[i] <- "Greg Daniels"}
+      else if(officeCopy$WrittenBy[i] == "Brent Forrester"){
+        officeCopy$WrittenBy[i] <- "Brent Forrester"}
+        else if(officeCopy$WrittenBy[i] == "Charlie Grandy"){
+          officeCopy$WrittenBy[i] <- "Charlie Grandy"}
+          else if(officeCopy$WrittenBy[i] == "Mindy Kaling"){
+            officeCopy$WrittenBy[i] <- "Mindy Kaling"}
+            else if(officeCopy$WrittenBy[i] == "Paul Lieberstein"){
+              officeCopy$WrittenBy[i] <- "Paul Lieberstein"}
+              else if(officeCopy$WrittenBy[i] == "B.J. Novak"){
+                officeCopy$WrittenBy[i] <- "B.J. Novak"}
+                else if(officeCopy$WrittenBy[i] == "Michael Schur"){
+                  officeCopy$WrittenBy[i] <- "Michael Schur"}
+                  else if(officeCopy$WrittenBy[i] == "Justin Spitzer"){
+                    officeCopy$WrittenBy[i] <- "Justin Spitzer"}
+                    else{officeCopy$WrittenBy[i] <- "Other"}
+}
+
+
 set.seed(1725)
 train <- sample(1:nrow(officeData), size=nrow(officeData)*0.8)
 test <- setdiff(1:nrow(officeData), train)
 
-officeTrain <- officeData[train,]
-officeTest <- officeData[test,]
+officeTrain <- officeCopy[train,]
+officeTest <- officeCopy[test,]
+
 
 #random forest-
 #mtry and ntree set by UI
-rf.office <- randomForest(formula=Rating ~.-Title, data=officeTrain, mtry=4, ntree=10)
+rf.office <- randomForest(formula=Rating ~., data=officeTrain, mtry=4, ntree=10)
 yhat.rf <- predict(rf.office, newdata=officeTest)
 office.test <- officeTest[,"Rating"]
 mse <- mean((yhat.rf-office.test)^2)
 
 #Two supervised learning methods
-linearFit <- lm(Rating~.-Title, data=officeTrain)
+linearFit <- lm(Rating~., data=officeTrain)
 predict(linearFit, newdata = officeTest)
 #checkboxes for UI to select variables used
   #conditional panel for each to select value of variable
