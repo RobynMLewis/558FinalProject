@@ -55,7 +55,7 @@ ggplotly(g2)
 
 #Modeling
 #subset into test/train
-officeCopy <- officeData[,-c(2)]
+officeCopy <- officeData[]
 
 allDirectors <- unique(officeCopy$DirectedBy)
 topDirectors <- c("Jeffrey Blitz", "Greg Daniels", "Randall Einhorn", "Paul Feig", "Ken Kwapis", "Paul Lieberstein", "Charles McDougall", "David Rogers", "Matt Sohn", "Ken Whittingham")
@@ -112,6 +112,8 @@ for(i in 1:nrow(officeCopy)){
                     else{officeCopy$WrittenBy[i] <- "Other"}
 }
 
+officeCopy$DirectedBy <- as.factor(officeCopy$DirectedBy)
+officeCopy$WrittenBy <- as.factor(officeCopy$WrittenBy)
 
 set.seed(1725)
 train <- sample(1:nrow(officeData), size=nrow(officeData)*0.8)
@@ -120,6 +122,19 @@ test <- setdiff(1:nrow(officeData), train)
 officeTrain <- officeCopy[train,]
 officeTest <- officeCopy[test,]
 
+#Clustering
+hc.complete=hclust(dist(officeCopy), method = "complete")
+plot(hc.complete, main="Complete Linkage", labels = officeCopy$Title, xlab = "", cex=.5)
+
+#PCA
+pca.office <- prcomp(officeCopy)
+
+#Two supervised learning methods
+#Linear regression
+#checkboxes for UI to select variables used
+#conditional panel for each to select value of variable
+linearFit <- lm(Rating~., data=officeTrain)
+predict(linearFit, newdata = officeTest)
 
 #random forest-
 #mtry and ntree set by UI
@@ -127,12 +142,6 @@ rf.office <- randomForest(formula=Rating ~., data=officeTrain, mtry=4, ntree=10)
 yhat.rf <- predict(rf.office, newdata=officeTest)
 office.test <- officeTest[,"Rating"]
 mse <- mean((yhat.rf-office.test)^2)
-
-#Two supervised learning methods
-linearFit <- lm(Rating~., data=officeTrain)
-predict(linearFit, newdata = officeTest)
-#checkboxes for UI to select variables used
-  #conditional panel for each to select value of variable
 
 #Data Viewing
 #User can scroll through, subset, and save data
