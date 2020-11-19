@@ -8,6 +8,7 @@
 #
 
 library(shiny)
+runGitHub("558FinalProject", "RobynMLewis")
 
 #Import data and setup
 #Import OfficeIMBD dataset
@@ -165,7 +166,7 @@ shinyServer(function(input, output, session){
         else if(type == "Distribution"){
             #By Writer
             if(subsetFilter == "Writer"){
-            z <- input$writers
+            z <- input$writers1
             g2 <- ggplot(filter(officeCopy, WrittenBy == z), aes(x=Rating))+
                 geom_histogram(aes(fill=Season), binwidth = .125)+
                 labs(title = paste0("Distribution of Episode Ratings: ", x, " ", z))+
@@ -174,7 +175,7 @@ shinyServer(function(input, output, session){
             }
             #By Director
             else if(subsetFilter == "Director"){
-            z <- input$directors
+            z <- input$directors1
             g2 <- ggplot(filter(officeCopy, DirectedBy == z), aes(x=Rating))+
                 geom_histogram(aes(fill=Season), binwidth = .125)+
                 labs(title = paste0("Distribution of Episode Ratings: ", x, " ", z))+
@@ -216,7 +217,42 @@ shinyServer(function(input, output, session){
         hc=hclust(dist(officeCopy), method = y)
         plot(hc, main=paste0(x, " Linkage"), labels = officeCopy$Title, xlab = "", cex=.5)
     })# end of cluster
+    #create models
     output$model <- renderPrint({
+        model <- input$model
+        if(model == "Random Forest"){
+            rf.office <- randomForest(formula=Rating ~., data=officeTrain, mtry=4, ntree=10)
+            yhat.rf <- predict(rf.office, newdata=officeTest)
+            office.test <- officeTest[,"Rating"]
+            mse <- mean((yhat.rf-office.test)^2)
+        }
+        else if (model == "Linear Regression"){
+            linearFit <- lm(Rating~., data=officeTrain)
+            predict(linearFit, newdata = officeTest)
+        }
+        
+    })# end of models
+    #view/subset data
+    output$data <- DT::renderDataTable({
+        x <- input$subset
+        
+        if(x == "Season"){
+            y <- input$season2
+            subsetData <- officeData %>% filter(Season == y)
+            datatable(subsetData)
+        }
+        else if(x == "Writer"){
+            y <- input$writer2
+            subsetData <- officeData %>% filter(WrittenBy == y)
+        }
+        else if(x == "Director"){
+            y <- input$director2
+            subsetData <- officeData %>% filter(DirectedBy == y)
+        }
+    output$downloadData <- downloadHandler(
+        filename = "OfficeData.csv",
+        content = write.csv(subsetData)
+    )
         
     })
 }) #end of server function

@@ -104,13 +104,13 @@ shinyUI(fluidPage(
                                     #Show this panel to select Director
                                     conditionalPanel(
                                       condition = "input.filter == 'Director'",
-                                      selectInput(directors, "Which Director?", choices=directors),
+                                      selectInput(directors1, "Which Director?", choices=directors),
                                       submitButton("Is This a Rundown?")
                                     ),
                                     #Show this panel to select Writer
                                     conditionalPanel(
                                       condition = "input.filter == 'Writer'",
-                                      selectInput(writers, "Which Writer?", choices=writers),
+                                      selectInput(writers1, "Which Writer?", choices=writers),
                                       submitButton("Is This a Rundown?")
                                     )
                         )
@@ -179,7 +179,23 @@ shinyUI(fluidPage(
                         h4("This is the data. It is a statement of fact."),
                         fluidRow(
                             #controls for subsetting
-                            box(),
+                            box(
+                                radioButtons("subset", "Subset Data by:", c("Season", "Writer", "Director")),
+                                    conditionalPanel(
+                                        condition = "subset == 'Season'", 
+                                        numericInput(season2, "Which Season?", min=1, max=9, step=1)
+                                    ),
+                                    conditionalPanel(
+                                        condition = "subset == 'Writer'",
+                                        selectInput(writers2, "Which Writer?", choices=writers)
+                                    ),
+                                    conditionalPanel(
+                                        condition = "subset == 'Director'",
+                                        selectInput(directors2, "Which Director?", choices=directors)
+                                    )
+                                
+                                )
+                            ),
                             #viewing/downloading data
                             box(
                                 dataTableOutput("data"),
