@@ -140,9 +140,6 @@ officeTest <- officeCopy[test,]
 hc.complete=hclust(dist(officeCopy), method = "complete")
 plot(hc.complete, main="Complete Linkage", labels = officeCopy$Title, xlab = "", cex=.5)
 
-#PCA
-pca.office <- prcomp(officeCopy)
-
 #Two supervised learning methods
 #Linear regression
 #checkboxes for UI to select variables used

@@ -94,7 +94,7 @@ officeTest <- officeCopy[test,]
 
 
 # Define server logic
-shinyServer(function(input, output, session) {
+shinyServer(function(input, output, session){
     
     #Create plots for rundown options
     output$rundown <- renderPlot({
@@ -104,17 +104,12 @@ shinyServer(function(input, output, session) {
         subsetFilter <- input$filter
             if(subsetFilter == "Season"){
                 x <- "Season"
-                z <- seasonNumber <- input$season
             }
             else if(subsetFilter == "Writer"){
                 x <- "Written By"
-                y <- "WrittenBy"
-                z <- writer <- input$writers
             }
             else if(subsetFilter == "Director"){
                 x <- "Directed By"
-                y <- "DirectedBy"
-                z <- director <- input$directors
             }
         #Create boxplots
         if(type == "Boxplot"){
@@ -149,36 +144,79 @@ shinyServer(function(input, output, session) {
         else if(type == "Numerical Summary"){
             #By Season
             if(subsetFilter == "Season"){
+            z <- input$season
             officeSubset <- officeData %>% filter(Season == z)
             kable(sapply(select(officeSubset, Rating), summary), digits=1, caption = paste0("Summary of Episode Ratings, ", x, " ", z))
         }
             #By Director
             else if(subsetFilter == "Director"){
+            z <- input$directors
             officeSubset <- officeData %>% filter(DirectedBy == z)
             kable(sapply(select(officeSubset, Rating), summary), digits=1, caption = paste0("Summary of Episode Ratings, ", x, " ", z))
             }
             #By Writer
             else if(SubsetFilter == "Writer"){
+            z <- input$writers
             officeSubset <- officeData %>% filter(WrittenBy == z)
             kable(sapply(select(officeSubset, Rating), summary), digits=1, caption = paste0("Summary of Episode Ratings, ", x, " ", z))
             }
         }
         #Distributions
         else if(type == "Distribution"){
-            #By Season
-            if(subsetFilter == "Season"){
-            g2 <- ggplot(filter(officeCopy, WrittenBy == "Mindy Kaling"), aes(x=Rating))+
+            #By Writer
+            if(subsetFilter == "Writer"){
+            z <- input$writers
+            g2 <- ggplot(filter(officeCopy, WrittenBy == z), aes(x=Rating))+
                 geom_histogram(aes(fill=Season), binwidth = .125)+
                 labs(title = paste0("Distribution of Episode Ratings: ", x, " ", z))+
                 theme_minimal()
             ggplotly(g2)
             }
+            #By Director
+            else if(subsetFilter == "Director"){
+            z <- input$directors
+            g2 <- ggplot(filter(officeCopy, DirectedBy == z), aes(x=Rating))+
+                geom_histogram(aes(fill=Season), binwidth = .125)+
+                labs(title = paste0("Distribution of Episode Ratings: ", x, " ", z))+
+                theme_minimal()
+            ggplotly(g2)
+            }
+            #By Season
+            else if(subsetFilter == "Season"){
+            z <- input$season1
+                if(z == "ALL"){
+                g2 <- ggplot(officeData, aes(x=Rating))+
+                    geom_histogram(color="dark blue", fill="light blue", binwidth = .125)+
+                    labs(title = paste0("Distribution of Episode Ratings"))+
+                    theme_minimal()
+                ggplotly(g2)
+                }
+                else{
+                g2 <- ggplot(filter(officeData, Season == z), aes(x=Rating))+
+                    geom_histogram(color="dark blue", fill="light blue", binwidth = .125)+
+                    labs(title = paste0("Distribution of Episode Ratings: ", x, " ", z))+
+                    theme_minimal()
+                ggplotly(g2)
+                }
+            }
         }
+        }
+}) #end of rundown output
+    #download button for plots
+    output$downloadPlot <- downloadHandler(
+        filename = "rundown.png",
+        content = output$rundown, 
+        contentType = "image/png"
+    )
+    #cluster analysis
+    output$cluster <- renderPlot({
+        x <- input$clustering
+        y <- tolower(x)
         
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
-
+        hc=hclust(dist(officeCopy), method = y)
+        plot(hc, main=paste0(x, " Linkage"), labels = officeCopy$Title, xlab = "", cex=.5)
+    })# end of cluster
+    output$model <- renderPrint({
+        
     })
-
-})
+}) #end of server function

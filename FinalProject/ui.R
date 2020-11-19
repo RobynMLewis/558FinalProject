@@ -6,10 +6,17 @@
 #
 #    http://shiny.rstudio.com/
 #
-install.packages("shinydashboard", "tidyverse", "knitr", "ggplot2", "plotly", "dplyr", "DT", "randomForest", "ape", "ggdendro")
+#install.packages("shinydashboard", "tidyverse", "knitr", "ggplot2", "plotly", "dplyr", "DT", "randomForest", "ape", "ggdendro")
 
 library(shiny)
 library(shinydashboard)
+library(tidyverse)
+library(knitr)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(DT)
+library(randomForest)
 
 #setup some initial information
 writers <- c("Jennifer Celotta", "Daniel Chun", "Greg Daniels", "Brent Forrester", "Charlie Grandy", "Mindy Kaling",
@@ -20,7 +27,7 @@ choices <- c("Season", "Director", "Writer")
 
 # Define UI for application
 shinyUI(fluidPage(
-    withMathJax(),
+    #withMathJax(),
     dashboardPage(
         dashboardHeader(title="The Office IMDB Ratings"),
         #Set up side bar menu
@@ -91,7 +98,7 @@ shinyUI(fluidPage(
                                     #Show this panel to select Season
                                     conditionalPanel(
                                       condition = "input.filter == 'Season'",
-                                      numericInput(season, "Which Season?", min=1, max=9, step=1),
+                                      selectInput(season1, "Which Season?", choices=c("ALL", 1:9)),
                                       submitButton("Is This a Rundown?")
                                     ),
                                     #Show this panel to select Director
@@ -116,40 +123,73 @@ shinyUI(fluidPage(
                          br(),
                          p("Look like a rundown? Go ahead and fax it to the distribution list. If you don't
                            have a distribution list, maybe just fax it to your dad."),
+                         #download button for saving plot
                          downloadButton("downloadPlot", "Fax to the Distribution List")
                      )
                  )
                         ),
+                #Tab for cluster analysis
                 tabItem(tabName = "analysis",
-                        
+                        h4("Let's take a look at how the episodes are related. It's like if all the kids
+                           grew up and married each. It's every parent's dream"),
+                        fluidRow(
+                            #box for controls
+                            box(
+                                selectInput("clustering", "How should we compute the clusters?", choices=c("Complete", "Average", "Single")),
+                                h4("That's what she said!")
+                            ),
+                            #box for output
+                            box(
+                                plotOutput("cluster")
+                            )
+                        )
                         ),
+                #Tab for models
                 tabItem(tabName = "models",
-                        #text: Unfortunately the chair model, Deborah Shoshlefski, crashed her car into an airplane
-                        #hangar. So we'll have to look at some statistical models instead.
-                        #selectInput(model, "Pick a model", choices=c("Random Forest", "Linear Regression"))
-                            #conditional panel(
-                                #condition = "input.model == 'Random Forest'"
-                                    #text:  Michael didn't get invited on Ryan's wilderness retreat and wants to 
-                                    #prove himself. He's going to go deep into a random forest with nothing but 
-                                    #a pocket knife and some duct tape. Let's do some analysis to help him out!
-                                    #numericInput(nodes, "How many items (nodes) should Michael use?", min=1, max=4, step=1)
-                                    #sliderInput(trees, "How many trees?", min=1, max=25)
-                                    #submitButton("Into the Wilderness!") 
-                            #)
-                            #conditional panel(
-                                #condition = "input.model == 'Linear Regression'"
-                                #text: something clever
-                                #checkboxGroupInput(vars, "Which Variables to Include?", choices=c("Season", "Vote Count", "Director", "Writer"))
-                            #)
+                        h4("Unfortunately the chair model, Deborah Shoshlefski, crashed her car into an airplane
+                        hangar. So we'll have to look at some statistical models instead."),
+                        fluidRow(
+                            #box for controls
+                            box(
+                            selectInput(model, "Pick a model", choices=c("Random Forest", "Linear Regression")),
+                                conditionalPanel(
+                                    condition = "input.model == 'Random Forest'",
+                                    h4("Michael didn't get invited on Ryan's wilderness retreat and wants to 
+                                    prove himself. He's going to go deep into a random forest with nothing but 
+                                    a pocket knife and some duct tape. Let's do some analysis to help him out!"),
+                                    numericInput(nodes, "How many items (nodes) should Michael use?", min=1, max=4, step=1),
+                                    sliderInput(trees, "How many trees?", min=1, max=25),
+                                    submitButton("Into the Wilderness!") 
+                            ),
+                                conditionalPanel(
+                                    condition = "input.model == 'Linear Regression'",
+                                    h4("It's not as bad as Cece's sleep regression, but maybe Jim will still feed you
+                                       some pizza while you're working on this"),
+                                    checkboxGroupInput(vars, "Which Variables to Include?", choices=c("Season", "Vote Count", "Director", "Writer"))
+                            )
+                            ),
+                            #Output of model
+                            box(
+                                verbatimTextOutput("model")
+                            )
+                        )
                         ),
+                #Tab for viewing/downloading data
                 tabItem(tabName = "data",
-                        #text: This is the data. It is a statement of fact.
-                        
-                        #downloadButton("downloadData", "I Declare Download!")
+                        h4("This is the data. It is a statement of fact."),
+                        fluidRow(
+                            #controls for subsetting
+                            box(),
+                            #viewing/downloading data
+                            box(
+                                dataTableOutput("data"),
+                                downloadButton("downloadData", "I Declare Download!")
+                            )
+                        )
                         )
             )
             
         )
     )
 
-))
+)))
