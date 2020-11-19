@@ -58,12 +58,18 @@ shinyUI(fluidPage(
                         #Show this panel for boxplot- select filter    
                         conditionalPanel(
                             condition = "input.analysis=='Boxplot Analysis'",
-                                radioButtons(filter, "Box Plot of What?", choices=choices),
+                                radioButtons("filter", "Box Plot of What?", choices=choices),
+                                submitButton("Is This a Rundown?")    
+                        ),
+                        #Show this panel for Numerical Summary- select filter
+                        conditionalPanel(
+                            condition = "input.analysis == 'Numerical Summary'",
+                                radioButtons("filter", "Summary of What?", choices=choices),
                                     #Show this panel to select Season
                                     conditionalPanel(
-                                        condition = "input.filter == 'Season'",
-                                        numericInput(season, "Which Season?", min=1, max=9, step=1),
-                                        submitButton("Is This a Rundown?")
+                                      condition = "input.filter == 'Season'",
+                                      numericInput(season, "Which Season?", min=1, max=9, step=1),
+                                      submitButton("Is This a Rundown?")
                                     ),
                                     #Show this panel to select Director
                                     conditionalPanel(
@@ -78,52 +84,38 @@ shinyUI(fluidPage(
                                         submitButton("Is This a Rundown?")
                                     )
                         ),
-                        #Show this panel for Numerical Summary- select filters
-                        conditionalPanel(
-                            condition = "input.analysis == 'Numerical Summary'",
-                                radioButtons(filter, "Summary of What?", choices=choices),
-                                    conditionalPanel(
-                                        condition = "input.filter == 'Season'",
-                                        numericInput(season, "Which Season?", min=1, max=9, step=1),
-                                        submitButton("Is This a Rundown?")
-                                    ),
-                                    conditionalPanel(
-                                        condition = "input.filter == 'Director'",
-                                        selectInput(directors, "Which Director?", choices=directors),
-                                        submitButton("Is This a Rundown?")
-                                    ),
-                                    conditionalPanel(
-                                        condition = "input.filter == 'Writer'",
-                                        selectInput(writers, "Which Writer?", choices=writers),
-                                        submitButton("Is This a Rundown?")
-                                    )
-                        ),
-                        #Show this panel for Distribution- select filters
+                        #Show this panel for Distribution- select filter
                         conditionalPanel(
                             condition = "input.analysis == 'Distribution'",
-                                radioButtons(filter, "Distribution of What?", choices=choices),
+                                radioButtons("filter", "Distribution of What?", choices=choices),
+                                    #Show this panel to select Season
                                     conditionalPanel(
-                                        condition = "input.filter == 'Season'",
-                                        numericInput(season, "Which Season?", min=1, max=9, step=1),
-                                        submitButton("Is This a Rundown?")
+                                      condition = "input.filter == 'Season'",
+                                      numericInput(season, "Which Season?", min=1, max=9, step=1),
+                                      submitButton("Is This a Rundown?")
                                     ),
+                                    #Show this panel to select Director
                                     conditionalPanel(
-                                        condition = "input.filter == 'Director'",
-                                        selectInput(directors, "Which Director?", choices=directors),
-                                        submitButton("Is This a Rundown?")
+                                      condition = "input.filter == 'Director'",
+                                      selectInput(directors, "Which Director?", choices=directors),
+                                      submitButton("Is This a Rundown?")
                                     ),
+                                    #Show this panel to select Writer
                                     conditionalPanel(
-                                        condition = "input.filter == 'Writer'",
-                                        selectInput(writers, "Which Writer?", choices=writers),
-                                        submitButton("Is This a Rundown?")
+                                      condition = "input.filter == 'Writer'",
+                                      selectInput(writers, "Which Writer?", choices=writers),
+                                      submitButton("Is This a Rundown?")
                                     )
                         )
-                                    
                      ),
                      #Output on right
                      box(
                          plotOutput("rundown"),
                          br(),
+                         p("Hover over or zoom in to see more details"),
+                         br(),
+                         p("Look like a rundown? Go ahead and fax it to the distribution list. If you don't
+                           have a distribution list, maybe just fax it to your dad."),
                          downloadButton("downloadPlot", "Fax to the Distribution List")
                      )
                  )

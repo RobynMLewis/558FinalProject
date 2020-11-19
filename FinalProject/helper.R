@@ -20,30 +20,44 @@ officeData$WrittenBy <- as.factor(officeData$WrittenBy)
 #Can you figure out a map of Scranton, PA?
 #set the gg environment so that x is selected by the drop down box
 #Start with boxplot of ratings from each season, overlaid with scatter
-g <- ggplot(officeData, aes(x=Season, y=Rating))
 
-g1 <- g +
+
+g1 <- ggplot(officeData, aes(x=Season, y=Rating))+
   geom_boxplot()+
   geom_jitter(aes(color=DirectedBy, text=paste0("Episode: ", Title)))+
   labs(title = "Rating of Episodes by Season")+
   theme(legend.position = "none")
 ggplotly(g1)
 
+g4 <- ggplot(filter(officeCopy, DirectedBy != "Other"), aes(x=DirectedBy, y=Rating))+
+  geom_boxplot()+
+  geom_jitter(aes(color=Season, text=paste0("Episode: ", Title)))+
+  labs(title = "Rating of Episodes by Director", x="Director")+
+  theme(legend.position = "none", axis.text.x=element_text(angle=45))
+ggplotly(g4)
 
-#Numerical summary of episode ratings- UI can select season, director, writer (factors?)
-officeSubset <- officeData %>% filter(Season == "2")
-kable(sapply(select(officeSubset, Rating), summary), digits=1, caption = paste0("Summary of Episode Ratings for Season ", "2"))
+g5 <- ggplot(filter(officeCopy, WrittenBy != "Other"), aes(x=WrittenBy, y=Rating))+
+  geom_boxplot()+
+  geom_jitter(aes(color=Season, text=paste0("Episode: ", Title)))+
+  labs(title = "Rating of Episodes by Writer", x="Writer")+
+  theme(legend.position = "none", axis.text.x=element_text(angle=45))
+ggplotly(g5)
+
+
+#Numerical summary of episode ratings- UI can select season, director, writer
+y <- "Written By"
+z <- "Mindy Kaling"
+officeSubset <- officeData %>% filter(Season == z)
+kable(sapply(select(officeSubset, Rating), summary), digits=1, caption = paste0("Summary of Episode Ratings for ", y, " ", z))
 
 #Density of ratings
-g2 <- ggplot(officeData, aes(x=Rating))+
-  geom_histogram(color="dark blue", fill="light blue")+
-  labs(title = "Distribution of Episode Ratings")+
+g2 <- ggplot(filter(officeData, Season == "2"), aes(x=Rating))+
+  geom_histogram(color="dark blue", fill="light blue", binwidth = .125)+
+  labs(title = paste0("Distribution of Episode Ratings: ", y, " ", z))+
   theme_minimal()
 ggplotly(g2)
 
-
-#split writers up, use something like select(data, writer="x" or writer2="x" or writer3="x")
-#Drop down box to select "Summarize by:", choices are season, director, maybe writer
+#Drop down box to select "Summarize by:", choices are season, director, writer
 #Conditional box to futher summarize by something else?
 #Use plotly to allow user to click on plot
 #User needs to be able to save plot
@@ -58,8 +72,8 @@ ggplotly(g2)
 officeCopy <- officeData[]
 
 allDirectors <- unique(officeCopy$DirectedBy)
-topDirectors <- c("Jeffrey Blitz", "Greg Daniels", "Randall Einhorn", "Paul Feig", "Ken Kwapis", "Paul Lieberstein", "Charles McDougall", "David Rogers", "Matt Sohn", "Ken Whittingham")
-
+topDirectors <- c("Jeffrey Blitz", "Greg Daniels", "Randall Einhorn", "Paul Feig", "Ken Kwapis", 
+                  "Paul Lieberstein", "Charles McDougall", "David Rogers", "Matt Sohn", "Ken Whittingham")
 
 for(i in 1:nrow(officeCopy)){
   if(officeCopy$DirectedBy[i] == "Jeffrey Blitz"){
@@ -145,3 +159,22 @@ mse <- mean((yhat.rf-office.test)^2)
 
 #Data Viewing
 #User can scroll through, subset, and save data
+
+#Show this panel to select Season
+#conditionalPanel(
+#  condition = "input.filter == 'Season'",
+#  numericInput(season, "Which Season?", min=1, max=9, step=1),
+#  submitButton("Is This a Rundown?")
+#),
+#Show this panel to select Director
+#conditionalPanel(
+#  condition = "input.filter == 'Director'",
+#  selectInput(directors, "Which Director?", choices=directors),
+#  submitButton("Is This a Rundown?")
+#),
+#Show this panel to select Writer
+#conditionalPanel(
+#  condition = "input.filter == 'Writer'",
+#  selectInput(writers, "Which Writer?", choices=writers),
+#  submitButton("Is This a Rundown?")
+#)
